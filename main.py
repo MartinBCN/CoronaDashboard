@@ -2,28 +2,13 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
-import plotly.offline as pyo
-import plotly.graph_objects as go
 
-import pandas as pd
-pd.options.display.width = 0
-
-# df = pd.read_csv('data/owid-covid-data.csv')
-# print(df.head())
-# print(df['location'])
-#
-#
-# # Use a for loop (or list comprehension to create traces for the data list)
-#
-# data = [go.Scatter(x=df[df['location'] == location]['date'],
-#                    y=df[df['location'] == location]['new_cases'],
-#                    mode='lines',
-#                    name=location) for location in ['Germany']]
-#
-# pyo.plot(data)
-
+from cases import plot_cases
+from data import get_data
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+df = get_data()
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -35,13 +20,13 @@ app.layout = html.Div([
     html.Div(id='tabs-example-content')
 ])
 
+
 @app.callback(Output('tabs-example-content', 'children'),
               Input('tabs-example', 'value'))
 def render_content(tab):
     if tab == 'tab-1':
-        return html.Div([
-            html.H3('Tab content 1')
-        ])
+        return plot_cases(app, df)
+
     elif tab == 'tab-2':
         return html.Div([
             html.H3('Tab content 2')
