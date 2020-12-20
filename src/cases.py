@@ -11,12 +11,13 @@ from data import get_data
 
 def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
-    countries = [{'value': country, 'label': f'{country}'} for country in df['location'].unique()]
+    all_countries = [{'value': country, 'label': f'{country}'} for country in df['location'].unique()]
 
     plot = html.Div(
             [
                 html.Div(
-                    dcc.Dropdown(id='country_dropdown', options=countries, value='Germany'),
+                    dcc.Dropdown(id='country_dropdown', options=all_countries, value=['Germany'],
+                                 multi=True),
                     style={'width': '48%', 'display': 'inline-block'}
                 ),
                 html.Div(
@@ -34,7 +35,7 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
             ]
         )
 
-    def plot_single_column(country: str, column: str) -> dict:
+    def plot_single_column(countries: list, column: str) -> dict:
         traces = [
             go.Scatter(
                 x=df[df['location'] == country]['date'],
@@ -42,7 +43,7 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                 mode='lines',
                 opacity=0.7,
                 marker={'size': 15, 'opacity': 0.5, 'line': {'color': 'white', 'width': 0.5}}
-            )
+            ) for country in countries
         ]
         return {'data': traces,
                 'layout': go.Layout(title='Cars',
@@ -54,29 +55,29 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
         Output('plot_total_cases', 'figure'),
         [Input('country_dropdown', 'value')]
     )
-    def update_total_cases(country: str) -> dict:
-        return plot_single_column(country=country, column='total_cases')
+    def update_total_cases(countries: list) -> dict:
+        return plot_single_column(countries=countries, column='total_cases')
 
     @app.callback(
         Output('plot_new_cases', 'figure'),
         [Input('country_dropdown', 'value')]
     )
-    def update_new_cases(country: str) -> dict:
-        return plot_single_column(country=country, column='new_cases')
+    def update_new_cases(countries: list) -> dict:
+        return plot_single_column(countries=countries, column='new_cases')
 
     @app.callback(
         Output('plot_new_deaths', 'figure'),
         [Input('country_dropdown', 'value')]
     )
-    def update_total_cases(country: str) -> dict:
-        return plot_single_column(country=country, column='new_deaths')
+    def update_total_cases(countries: list) -> dict:
+        return plot_single_column(countries=countries, column='new_deaths')
 
     @app.callback(
         Output('plot_hosp_patients', 'figure'),
         [Input('country_dropdown', 'value')]
     )
-    def update_new_cases(country: str) -> dict:
-        return plot_single_column(country=country, column='hosp_patients')
+    def update_hospital(countries: list) -> dict:
+        return plot_single_column(countries=countries, column='hosp_patients')
 
     return plot
 

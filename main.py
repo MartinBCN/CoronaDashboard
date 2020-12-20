@@ -2,11 +2,13 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 
 from cases import plot_cases
 from data import get_data
+from scatter_plots import plot_scatter
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets = ['style.css', dbc.themes.BOOTSTRAP]
 
 df = get_data()
 
@@ -29,7 +31,7 @@ def render_content(tab):
 
     elif tab == 'tab-2':
         return html.Div([
-            html.H3('Tab content 2')
+            plot_scatter(app, df)
         ])
 
 
