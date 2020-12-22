@@ -4,15 +4,16 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 
-from cases import plot_cases
-from data import get_data
-from scatter_plots import plot_scatter
+from corona.cases import plot_cases
+from corona.data import get_data
+from corona.scatter_plots import plot_scatter
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP]
 
 df = get_data()
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 app.layout = html.Div([
     dcc.Tabs(id='tabs-corona', value='time_series', children=[

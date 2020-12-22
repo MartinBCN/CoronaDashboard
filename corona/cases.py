@@ -1,13 +1,12 @@
+import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
-import plotly.express as px
-
 import dash_daq as daq
-from data import get_data
+from corona.data import get_data
 
 # total_cases  new_cases  total_cases_per_million  new_cases_per_million
 FIELDS = {
