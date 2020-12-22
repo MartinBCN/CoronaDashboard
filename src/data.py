@@ -22,3 +22,5 @@ if __name__ == '__main__':
 
         df_pop_death = df_pop_death[idx]
         print(df_pop_death)
+
+    print(df.rolling(7))
