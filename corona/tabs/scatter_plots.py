@@ -1,12 +1,10 @@
-from pathlib import Path
 import plotly.graph_objects as go
 import pandas as pd
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
-from dash.dependencies import Input, Output
 
-from corona.data import get_data
+from corona.tabs.data import get_data
 
 
 def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
