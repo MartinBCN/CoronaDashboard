@@ -16,25 +16,17 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
     dcc.Tabs(id='tabs-corona', value='time_series', children=[
-        dcc.Tab(label='Time Series', value='time_series'),
-        dcc.Tab(label='Scatter Plots', value='scatter'),
+        dcc.Tab(label='Time Series',
+                children=html.Div([
+                    plot_cases(app, df)
+                ])),
+        dcc.Tab(label='Scatter Plots',
+                children=html.Div([
+                    plot_scatter(app, df)
+                ])),
     ]),
     html.Div(id='main')
 ])
-
-
-@app.callback(Output('main', 'children'),
-              Input('tabs-corona', 'value'))
-def render_content(tab):
-    if tab == 'time_series':
-        return html.Div([
-            plot_cases(app, df)
-        ])
-
-    elif tab == 'scatter':
-        return html.Div([
-            plot_scatter(app, df)
-        ])
 
 
 if __name__ == '__main__':

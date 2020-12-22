@@ -36,12 +36,41 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                                     yaxis={'title': 'Total Deaths'}
                                     )}
 
+    def plot_cases_vs_deaths() -> dict:
+        traces = []
+        for continent in df['continent'].unique():
+            df_continent = df[df['continent'] == continent]
+
+            idx = df.groupby(['location'])['date'].transform(max) == df['date']
+
+            df_continent = df_continent[idx]
+
+            traces.append(
+                go.Scatter(
+                    x=df_continent['total_cases'],
+                    y=df_continent['total_deaths'],
+                    mode='markers',
+                    opacity=0.7,
+                    marker={'size': 15, 'opacity': 0.5, 'line': {'color': 'white', 'width': 0.5}},
+                    name=continent
+                )
+            )
+        return {'data': traces,
+                'layout': go.Layout(title='Continents',
+                                    xaxis={'title': 'Cases'},
+                                    yaxis={'title': 'Deaths'}
+                                    )}
+
     plot = html.Div(
             [
                 html.Div(
                         dcc.Graph(id='scatter_continent', figure=plot_population_total_deaths()),
                         style={'width': '48%', 'display': 'inline-block'}
-                    )
+                    ),
+                html.Div(
+                    dcc.Graph(id='scatter_cases_deaths', figure=plot_cases_vs_deaths()),
+                    style={'width': '48%', 'display': 'inline-block'}
+                )
             ]
         )
 
