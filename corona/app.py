@@ -8,12 +8,15 @@ from corona.tabs.cases import plot_cases
 from corona.tabs.data import get_data
 from corona.tabs.scatter_plots import plot_scatter
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP]
+# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP]
 
 df = get_data()
 
 server = flask.Flask(__name__)
-app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, server=server
+                , external_stylesheets=[dbc.themes.BOOTSTRAP]
+                # ,meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
+                )
 app.config.suppress_callback_exceptions = True
 
 
@@ -42,18 +45,45 @@ def build_banner():
     )
 
 
+def build_tabs():
+    return html.Div(
+        id="tabs",
+        className="tabs",
+        children=[
+            dcc.Tabs(
+                id="tabs-corona",
+                value="time_series",
+                className="custom-tabs",
+                children=[
+                    dcc.Tab(
+                        id="Specs-tab",
+                        label="Time Series",
+                        value="tab_time_series",
+                        className="custom-tab",
+                        selected_className="custom-tab--selected",
+                        children=html.Div([
+                            plot_cases(app, df)
+                        ])
+                    ),
+                    dcc.Tab(
+                        id="Control-chart-tab",
+                        label="Scatter Plots",
+                        value="tab_scatter_plots",
+                        className="custom-tab",
+                        selected_className="custom-tab--selected",
+                        children=html.Div([
+                            plot_scatter(app, df)
+                        ])
+                    ),
+                ],
+            )
+        ],
+    )
+
+
 app.layout = html.Div([
     build_banner(),
-    dcc.Tabs(id='tabs-corona', value='time_series', children=[
-        dcc.Tab(label='Time Series',
-                children=html.Div([
-                    plot_cases(app, df)
-                ])),
-        dcc.Tab(label='Scatter Plots',
-                children=html.Div([
-                    plot_scatter(app, df)
-                ])),
-    ]),
+    build_tabs(),
     html.Div(id='main')
 ])
 

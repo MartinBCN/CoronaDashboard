@@ -6,6 +6,8 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import dash_daq as daq
+
+from assets.style import GRID_LINES
 from corona.tabs.data import get_data
 
 # total_cases  new_cases  total_cases_per_million  new_cases_per_million
@@ -105,9 +107,16 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
         return {'data': traces,
                 'layout': go.Layout(
-                                    xaxis={'title': 'date'},
-                                    yaxis={'title': field.capitalize()}
-                                    )}
+                                    xaxis={'title': 'date', **GRID_LINES},
+                                    yaxis={'title': field.capitalize(), **GRID_LINES},
+                                    margin=dict(t=40),
+                                    hovermode="closest",
+                                    paper_bgcolor="rgba(0,0,0,0)",
+                                    plot_bgcolor="rgba(0,0,0,0)",
+                                    legend={"font": {"color": "darkgray"}, "orientation": "h", "x": 0, "y": 1.1},
+                                    font={"color": "darkgray"},
+                                    showlegend=True
+                )}
 
     @app.callback(
         Output('cases', 'figure'),

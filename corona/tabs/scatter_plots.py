@@ -4,6 +4,7 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 
+from assets.style import GRID_LINES
 from corona.tabs.data import get_data
 
 
@@ -24,15 +25,25 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                     y=df_pop_death['total_deaths'],
                     mode='markers',
                     opacity=0.7,
-                    marker={'size': 15, 'opacity': 0.5, 'line': {'color': 'white', 'width': 0.5}},
-                    name=continent
+                    marker={'size': 15, 'opacity': 0.8, 'line': {'color': 'white', 'width': 0.5}},
+                    name=continent,
                 )
             )
+
+        layout = go.Layout(
+                            margin=dict(t=40),
+                            hovermode="closest",
+                            paper_bgcolor="rgba(0,0,0,0)",
+                            plot_bgcolor="rgba(0,0,0,0)",
+                            legend={"font": {"color": "darkgray"}, "orientation": "h", "x": 0, "y": 1.1},
+                            font={"color": "darkgray"},
+                            showlegend=True,
+                            xaxis={'title': 'Population', **GRID_LINES},
+                            yaxis={'title': 'Deaths', **GRID_LINES}
+                            )
+
         return {'data': traces,
-                'layout': go.Layout(title='Continents',
-                                    xaxis={'title': 'GDP'},
-                                    yaxis={'title': 'Total Deaths'}
-                                    )}
+                'layout': layout}
 
     def plot_cases_vs_deaths() -> dict:
         traces = []
@@ -54,13 +65,20 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                 )
             )
         return {'data': traces,
-                'layout': go.Layout(title='Continents',
-                                    xaxis={'title': 'Cases'},
-                                    yaxis={'title': 'Deaths'}
+                'layout': go.Layout(
+                                    margin=dict(t=40),
+                                    hovermode="closest",
+                                    paper_bgcolor="rgba(0,0,0,0)",
+                                    plot_bgcolor="rgba(0,0,0,0)",
+                                    legend={"font": {"color": "darkgray"}, "orientation": "h", "x": 0, "y": 1.1},
+                                    font={"color": "darkgray"},
+                                    showlegend=True,
+                                    xaxis={'title': 'Cases', **GRID_LINES},
+                                    yaxis={'title': 'Deaths', **GRID_LINES}
                                     )}
 
     plot = html.Div(
-            [
+            [html.Div('Some text here'),
                 html.Div(
                         dcc.Graph(id='scatter_continent', figure=plot_population_total_deaths()),
                         style={'width': '48%', 'display': 'inline-block'}
