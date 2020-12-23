@@ -4,7 +4,7 @@ pd.options.display.width = 0
 
 
 def get_data() -> pd.DataFrame:
-    p = Path(__file__).parents[2]
+    # p = Path(__file__).parents[2]
     df = pd.read_csv('data/owid-covid-data.csv')
     return df
 
