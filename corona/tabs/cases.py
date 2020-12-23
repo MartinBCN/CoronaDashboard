@@ -8,7 +8,7 @@ from dash.dependencies import Input, Output
 import dash_daq as daq
 
 from assets.style import GRID_LINES, generate_section_banner
-from corona.tabs.data import get_data
+from tabs.data import get_data
 
 # total_cases  new_cases  total_cases_per_million  new_cases_per_million
 FIELDS = {
