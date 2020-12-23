@@ -5,7 +5,6 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
-import dash_daq as daq
 
 from assets.style import GRID_LINES, generate_section_banner
 from tabs.data import get_data

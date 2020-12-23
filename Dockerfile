@@ -4,7 +4,6 @@ COPY requirements.txt .
 
 RUN pip install -r /requirements.txt
 
-ADD corona ./
 COPY . .
 
 EXPOSE 8050
