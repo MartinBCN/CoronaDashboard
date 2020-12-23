@@ -8,15 +8,11 @@ from corona.tabs.cases import plot_cases
 from corona.tabs.data import get_data
 from corona.tabs.scatter_plots import plot_scatter
 
-# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP]
 
 df = get_data()
 
 server = flask.Flask(__name__)
-app = dash.Dash(__name__, server=server
-                , external_stylesheets=[dbc.themes.BOOTSTRAP]
-                # ,meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
-                )
+app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.config.suppress_callback_exceptions = True
 
 
@@ -29,7 +25,7 @@ def build_banner():
                 id="banner-text",
                 children=[
                     html.H5("Corona Dashboard"),
-                    html.H6("Process Control and Exception Reporting"),
+                    html.H6("Analysis"),
                 ],
             ),
             html.Div(

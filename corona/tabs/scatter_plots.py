@@ -61,21 +61,24 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                 html.Div(children=[
                     generate_section_banner('Test'),
                     html.Div(
-                        dcc.Graph(id='scatter_continent', figure=plot_population_total_deaths())
+                        dcc.Graph(id='scatter_continent', figure=plot_population_total_deaths(),
+                                  config={'displayModeBar': False})
                     )],
                         style={'width': '48%', 'display': 'inline-block'}),
 
                 html.Div(children=[
                     generate_section_banner('Test'),
                     html.Div(
-                        dcc.Graph(id='scatter_cases_deaths', figure=plot_gdp_vs_deaths())
+                        dcc.Graph(id='scatter_cases_deaths', figure=plot_gdp_vs_deaths(),
+                                  config={'displayModeBar': False})
                     )],
                     style={'width': '48%', 'display': 'inline-block'}),
 
                 html.Div(children=[
                     generate_section_banner('Test'),
                     html.Div(
-                        dcc.Graph(id='scatter_gdp_deaths', figure=plot_cases_vs_deaths())
+                        dcc.Graph(id='scatter_gdp_deaths', figure=plot_cases_vs_deaths(),
+                                  config={'displayModeBar': False})
                     )],
                     style={'width': '48%', 'display': 'inline-block'}),
 
@@ -84,7 +87,9 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                     html.Div(
                         dcc.Graph(id='scatter_hospital_beds_deaths',
                                   figure=generic_scatter('hospital_beds_per_thousand', 'total_deaths_per_million',
-                                                         'Hospital Beds per Thousand', 'Deaths per Million'))
+                                                         'Hospital Beds per Thousand', 'Deaths per Million'),
+                                  config={'displayModeBar': False},
+                                  )
                     )],
                     style={'width': '48%', 'display': 'inline-block'})
 

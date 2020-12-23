@@ -7,7 +7,7 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import dash_daq as daq
 
-from assets.style import GRID_LINES
+from assets.style import GRID_LINES, generate_section_banner
 from corona.tabs.data import get_data
 
 # total_cases  new_cases  total_cases_per_million  new_cases_per_million
@@ -29,6 +29,7 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
     plot = html.Div(
             [
+                generate_section_banner('Cases and deaths per country in time'),
                 html.Div(
                     dcc.Dropdown(id='country_dropdown', options=all_countries, value=['Germany'],
                                  multi=True),
@@ -52,13 +53,22 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                     ],
                     style={'width': '48%', 'display': 'inline-block'}
                 ),
-                *[
-                    html.Div(
-                        dcc.Graph(id=col),
-                        style={'width': '48%', 'display': 'inline-block'}
-                    )
-                    for col in ['cases', 'deaths']
-                ],
+
+                html.Div(
+                    dcc.Graph(id='cases',
+                              config={'displayModeBar': False}),
+                    style={'width': '48%', 'display': 'inline-block'}
+                ),
+
+                html.Div(
+                    style={'width': '2%', 'display': 'inline-block'}
+                ),
+
+                html.Div(
+                    dcc.Graph(id='deaths',
+                              config={'displayModeBar': False}),
+                    style={'width': '48%', 'display': 'inline-block'}
+                )
 
             ]
         )
@@ -74,8 +84,9 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                 y=df[df['location'] == country][column],
                 mode='lines',
                 opacity=opacity,
-                name=country
-            ) for country in countries
+                name=country,
+                line={'color': px.colors.qualitative.Plotly[i]},
+            ) for (i, country) in enumerate(countries)
         ]
         if rolling:
             traces += [
@@ -92,7 +103,7 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
         return {'data': traces,
                 'layout': go.Layout(
-                                    xaxis={'title': 'date', **GRID_LINES},
+                                    xaxis={**GRID_LINES},
                                     yaxis={'title': field.capitalize(), **GRID_LINES},
                                     margin=dict(t=40),
                                     hovermode="closest",
