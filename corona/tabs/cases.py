@@ -6,7 +6,9 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import dash_daq as daq
-from corona.data import get_data
+
+from assets.style import GRID_LINES, generate_section_banner
+from corona.tabs.data import get_data
 
 # total_cases  new_cases  total_cases_per_million  new_cases_per_million
 FIELDS = {
@@ -27,6 +29,7 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
     plot = html.Div(
             [
+                generate_section_banner('Cases and deaths per country in time'),
                 html.Div(
                     dcc.Dropdown(id='country_dropdown', options=all_countries, value=['Germany'],
                                  multi=True),
@@ -36,42 +39,36 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
                     [
                         html.Div(
-                            daq.BooleanSwitch(
-                                id='CumulativeSwitch',
-                                on=False,
-                                label="Cumulate",
-                                labelPosition="left"
-                            ),
+                            html.Button('Toggle Cumulative', id='toggle-cumulative', n_clicks=1),
                             style={'width': '32%', 'display': 'inline-block'}
                         ),
                         html.Div(
-                            daq.BooleanSwitch(
-                                id='NormaliseSwitch',
-                                on=False,
-                                label="Normalise by population",
-                                labelPosition="left"
-                            ),
+                            html.Button('Toggle Normalisation', id='toggle-normalise', n_clicks=1),
                             style={'width': '32%', 'display': 'inline-block'}
                         ),
                         html.Div(
-                            daq.BooleanSwitch(
-                                id='RollingSwitch',
-                                on=False,
-                                label="Rolling Average",
-                                labelPosition="left"
-                            ),
+                            html.Button('Toggle Rolling', id='toggle-rolling', n_clicks=1),
                             style={'width': '32%', 'display': 'inline-block'}
                         ),
                     ],
                     style={'width': '48%', 'display': 'inline-block'}
                 ),
-                *[
-                    html.Div(
-                        dcc.Graph(id=col),
-                        style={'width': '48%', 'display': 'inline-block'}
-                    )
-                    for col in ['cases', 'deaths']
-                ],
+
+                html.Div(
+                    dcc.Graph(id='cases',
+                              config={'displayModeBar': False}),
+                    style={'width': '48%', 'display': 'inline-block'}
+                ),
+
+                html.Div(
+                    style={'width': '2%', 'display': 'inline-block'}
+                ),
+
+                html.Div(
+                    dcc.Graph(id='deaths',
+                              config={'displayModeBar': False}),
+                    style={'width': '48%', 'display': 'inline-block'}
+                )
 
             ]
         )
@@ -87,8 +84,9 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                 y=df[df['location'] == country][column],
                 mode='lines',
                 opacity=opacity,
-                name=country
-            ) for country in countries
+                name=country,
+                line={'color': px.colors.qualitative.Plotly[i]},
+            ) for (i, country) in enumerate(countries)
         ]
         if rolling:
             traces += [
@@ -105,31 +103,42 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
         return {'data': traces,
                 'layout': go.Layout(
-                                    xaxis={'title': 'date'},
-                                    yaxis={'title': field.capitalize()}
-                                    )}
+                                    xaxis={**GRID_LINES},
+                                    yaxis={'title': field.capitalize(), **GRID_LINES},
+                                    margin=dict(t=40),
+                                    hovermode="closest",
+                                    paper_bgcolor="rgba(0,0,0,0)",
+                                    plot_bgcolor="rgba(0,0,0,0)",
+                                    legend={"font": {"color": "darkgray"}, "orientation": "h", "x": 0, "y": 1.1},
+                                    font={"color": "darkgray"},
+                                    showlegend=True
+                )}
 
     @app.callback(
         Output('cases', 'figure'),
         [Input('country_dropdown', 'value'),
-         Input('NormaliseSwitch', 'on'),
-         Input('CumulativeSwitch', 'on'),
-         Input('RollingSwitch', 'on')]
+         Input('toggle-normalise', 'n_clicks'),
+         Input('toggle-cumulative', 'n_clicks'),
+         Input('toggle-rolling', 'n_clicks')]
     )
-    def update_cases(countries: list, normalise: bool, cumulative: bool, rolling: bool) -> dict:
-        return plot_single_column(countries=countries, field='cases', normalise=normalise,
-                                  cumulative=cumulative, rolling=rolling)
+    def update_cases(countries: list, normalise_clicks: int, cumulative_clicks: int, rolling_clicks: int) -> dict:
+        return plot_single_column(countries=countries, field='cases',
+                                  normalise=normalise_clicks % 2 == 0,
+                                  cumulative=cumulative_clicks % 2 == 0,
+                                  rolling=rolling_clicks % 2 == 0)
 
     @app.callback(
         Output('deaths', 'figure'),
         [Input('country_dropdown', 'value'),
-         Input('NormaliseSwitch', 'on'),
-         Input('CumulativeSwitch', 'on'),
-         Input('RollingSwitch', 'on')]
+         Input('toggle-normalise', 'n_clicks'),
+         Input('toggle-cumulative', 'n_clicks'),
+         Input('toggle-rolling', 'n_clicks')]
     )
-    def update_deaths(countries: list, normalise: bool, cumulative: bool, rolling: bool) -> dict:
-        return plot_single_column(countries=countries, field='deaths', normalise=normalise, cumulative=cumulative,
-                                  rolling=rolling)
+    def update_deaths(countries: list, normalise_clicks: int, cumulative_clicks: int, rolling_clicks: int) -> dict:
+        return plot_single_column(countries=countries, field='deaths',
+                                  normalise=normalise_clicks % 2 == 0,
+                                  cumulative=cumulative_clicks % 2 == 0,
+                                  rolling=rolling_clicks % 2 == 0)
 
     return plot
 
