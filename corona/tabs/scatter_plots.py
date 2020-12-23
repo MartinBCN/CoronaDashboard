@@ -5,7 +5,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 
 from assets.style import GRID_LINES, generate_section_banner
-from corona.tabs.data import get_data
+from tabs.data import get_data
 
 
 def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:

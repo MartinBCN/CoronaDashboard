@@ -4,9 +4,9 @@ import dash_core_components as dcc
 import flask
 import dash_bootstrap_components as dbc
 
-from corona.tabs.cases import plot_cases
-from corona.tabs.data import get_data
-from corona.tabs.scatter_plots import plot_scatter
+from tabs.cases import plot_cases
+from tabs.data import get_data
+from tabs.scatter_plots import plot_scatter
 
 
 df = get_data()

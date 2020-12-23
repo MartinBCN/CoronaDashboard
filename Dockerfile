@@ -4,7 +4,11 @@ COPY requirements.txt .
 
 RUN pip install -r /requirements.txt
 
-COPY . .
+ADD corona /app/
+ADD data /app/data
+
+
+WORKDIR /app
 
 EXPOSE 8050
 
