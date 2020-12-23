@@ -4,48 +4,13 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 
-from assets.style import GRID_LINES
+from assets.style import GRID_LINES, generate_section_banner
 from corona.tabs.data import get_data
 
 
 def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
-    def plot_population_total_deaths() -> dict:
-        traces = []
-        for continent in df['continent'].unique():
-            df_pop_death = df[df['continent'] == continent][['date', 'location', 'total_deaths', 'population']].copy()
-
-            idx = df.groupby(['location'])['date'].transform(max) == df['date']
-
-            df_pop_death = df_pop_death[idx]
-
-            traces.append(
-                go.Scatter(
-                    x=df_pop_death['population'],
-                    y=df_pop_death['total_deaths'],
-                    mode='markers',
-                    opacity=0.7,
-                    marker={'size': 15, 'opacity': 0.8, 'line': {'color': 'white', 'width': 0.5}},
-                    name=continent,
-                )
-            )
-
-        layout = go.Layout(
-                            margin=dict(t=40),
-                            hovermode="closest",
-                            paper_bgcolor="rgba(0,0,0,0)",
-                            plot_bgcolor="rgba(0,0,0,0)",
-                            legend={"font": {"color": "darkgray"}, "orientation": "h", "x": 0, "y": 1.1},
-                            font={"color": "darkgray"},
-                            showlegend=True,
-                            xaxis={'title': 'Population', **GRID_LINES},
-                            yaxis={'title': 'Deaths', **GRID_LINES}
-                            )
-
-        return {'data': traces,
-                'layout': layout}
-
-    def plot_cases_vs_deaths() -> dict:
+    def generic_scatter(x: str, y: str, x_name: str, y_name: str) -> dict:
         traces = []
         for continent in df['continent'].unique():
             df_continent = df[df['continent'] == continent]
@@ -56,12 +21,14 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
             traces.append(
                 go.Scatter(
-                    x=df_continent['total_cases'],
-                    y=df_continent['total_deaths'],
+                    x=df_continent[x],
+                    y=df_continent[y],
                     mode='markers',
                     opacity=0.7,
-                    marker={'size': 15, 'opacity': 0.5, 'line': {'color': 'white', 'width': 0.5}},
-                    name=continent
+                    marker={'size': 15, 'opacity': 0.8},
+                    name=continent,
+                    text=df_continent["location"],
+                    hoverinfo='text'
                 )
             )
         return {'data': traces,
@@ -73,20 +40,54 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                                     legend={"font": {"color": "darkgray"}, "orientation": "h", "x": 0, "y": 1.1},
                                     font={"color": "darkgray"},
                                     showlegend=True,
-                                    xaxis={'title': 'Cases', **GRID_LINES},
-                                    yaxis={'title': 'Deaths', **GRID_LINES}
+                                    xaxis={'title': x_name, **GRID_LINES},
+                                    yaxis={'title': y_name, **GRID_LINES}
                                     )}
 
+    def plot_population_total_deaths() -> dict:
+        return generic_scatter('population', 'total_deaths', 'Population', 'Total Deaths')
+
+    def plot_cases_vs_deaths() -> dict:
+        return generic_scatter('total_cases_per_million', 'total_deaths_per_million',
+                               'Cases per Million', 'Deaths per Million')
+
+    def plot_gdp_vs_deaths() -> dict:
+        return generic_scatter('gdp_per_capita', 'total_deaths_per_million',
+                               'GDP per Capita', 'Deaths per Million')
+
     plot = html.Div(
-            [html.Div('Some text here'),
-                html.Div(
-                        dcc.Graph(id='scatter_continent', figure=plot_population_total_deaths()),
-                        style={'width': '48%', 'display': 'inline-block'}
-                    ),
-                html.Div(
-                    dcc.Graph(id='scatter_cases_deaths', figure=plot_cases_vs_deaths()),
-                    style={'width': '48%', 'display': 'inline-block'}
-                )
+        className="twelve columns", children=
+            [
+                html.Div(children=[
+                    generate_section_banner('Test'),
+                    html.Div(
+                        dcc.Graph(id='scatter_continent', figure=plot_population_total_deaths())
+                    )],
+                        style={'width': '48%', 'display': 'inline-block'}),
+
+                html.Div(children=[
+                    generate_section_banner('Test'),
+                    html.Div(
+                        dcc.Graph(id='scatter_cases_deaths', figure=plot_gdp_vs_deaths())
+                    )],
+                    style={'width': '48%', 'display': 'inline-block'}),
+
+                html.Div(children=[
+                    generate_section_banner('Test'),
+                    html.Div(
+                        dcc.Graph(id='scatter_gdp_deaths', figure=plot_cases_vs_deaths())
+                    )],
+                    style={'width': '48%', 'display': 'inline-block'}),
+
+                html.Div(children=[
+                    generate_section_banner('Test'),
+                    html.Div(
+                        dcc.Graph(id='scatter_hospital_beds_deaths',
+                                  figure=generic_scatter('hospital_beds_per_thousand', 'total_deaths_per_million',
+                                                         'Hospital Beds per Thousand', 'Deaths per Million'))
+                    )],
+                    style={'width': '48%', 'display': 'inline-block'})
+
             ]
         )
 
