@@ -7,6 +7,7 @@ from dash.dependencies import Input, Output, State, ClientsideFunction
 
 from tabs.cases import plot_cases
 from tabs.data import get_data
+from tabs.map import generate_map
 from tabs.scatter_plots import plot_scatter
 
 
@@ -99,13 +100,13 @@ def build_tabs():
                         ])
                     ),
                     dcc.Tab(
-                        id="tab-forecast-plot",
-                        label="Forecast",
-                        value="tab_forecast",
+                        id="tab-map",
+                        label="Map",
+                        value="tab_map",
                         className="custom-tab",
                         selected_className="custom-tab--selected",
                         children=html.Div([
-                            # plot_scatter(app, df)
+                            generate_map(app, df)
                         ])
                     ),
                 ],
