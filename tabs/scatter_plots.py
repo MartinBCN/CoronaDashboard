@@ -54,6 +54,41 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
         return generic_scatter('gdp_per_capita', 'total_deaths_per_million',
                                'GDP per Capita', 'Deaths per Million')
 
+    def plot_gender_head() -> dict:
+        df_europe = df[df['continent'] == 'Europe']
+        idx = df.groupby(['location'])['date'].transform(max) == df['date']
+        df_europe = df_europe[idx]
+
+        traces = []
+
+        for (gender, color) in zip(['male', 'female'], ['blue', 'red']):
+            df_temp = df_europe[df_europe['gender'] == gender]
+            traces.append(
+                go.Scatter(
+                    x=df_temp['total_cases_per_million'],
+                    y=df_temp['total_deaths_per_million'],
+                    mode='markers',
+                    opacity=0.7,
+                    marker={'size': 15, 'opacity': 0.8, 'color': color},
+                    name=gender,
+                    text=df_temp["location"],
+                    hoverinfo='text'
+                )
+            )
+        return {'data': traces,
+                'layout': go.Layout(
+                    margin=dict(t=40),
+                    hovermode="closest",
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    legend={"font": {"color": "darkgray"}, "orientation": "h", "x": 0, "y": 1.1},
+                    font={"color": "darkgray"},
+                    showlegend=True,
+                    title="Female if at least one of elected head of state/government is female",
+                    xaxis={'title': 'Total Cases per Million', },
+                    yaxis={'title': 'Total Deaths per Million', }
+                )}
+
     plot = html.Div(
         className="twelve columns", children=
             [
@@ -86,6 +121,16 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                         dcc.Graph(id='scatter_hospital_beds_deaths',
                                   figure=generic_scatter('hospital_beds_per_thousand', 'total_deaths_per_million',
                                                          'Hospital Beds per Thousand', 'Deaths per Million'),
+                                  config={'displayModeBar': False},
+                                  )
+                    )],
+                              style={'width': '45%', 'display': 'inline-block'},
+                              className="pretty_container"),
+
+                html.Div(children=[
+                    html.Div(
+                        dcc.Graph(id='gender_head_of_state',
+                                  figure=plot_gender_head(),
                                   config={'displayModeBar': False},
                                   )
                     )],
