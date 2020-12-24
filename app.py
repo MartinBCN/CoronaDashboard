@@ -3,6 +3,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 import flask
 import dash_bootstrap_components as dbc
+from dash.dependencies import Input, Output, State, ClientsideFunction
 
 from tabs.cases import plot_cases
 from tabs.data import get_data
@@ -18,27 +19,53 @@ app.config.suppress_callback_exceptions = True
 
 def build_banner():
     return html.Div(
-        id="banner",
-        className="banner",
-        children=[
-            html.Div(
-                id="banner-text",
-                children=[
-                    html.H5("Corona Dashboard"),
-                    html.H6("Analysis"),
-                ],
-            ),
-            html.Div(
-                id="banner-logo",
-                children=[
-                    html.Button(
-                        id="learn-more-button", children="LEARN MORE", n_clicks=0
-                    ),
-                    html.Img(id="logo", src=app.get_asset_url("dash-logo-new.png")),
-                ],
-            ),
-        ],
-    )
+            [
+                html.Div(
+                    [
+                        html.Img(
+                            src=app.get_asset_url("dash-logo.png"),
+                            id="plotly-image",
+                            style={
+                                "height": "60px",
+                                "width": "auto",
+                                "margin-bottom": "25px",
+                            },
+                        )
+                    ],
+                    className="one-third column",
+                ),
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.H3(
+                                    "Corona Dashboard",
+                                    style={"margin-bottom": "0px"},
+                                ),
+                                html.H5(
+                                    "Analysis", style={"margin-top": "0px"}
+                                ),
+                            ]
+                        )
+                    ],
+                    className="one-third column",
+                    id="title",
+                ),
+                html.Div(
+                    [
+                        html.A(
+                            html.Button("Learn More", id="learn-more-button"),
+                            href="https://github.com/MartinBCN/CoronaDashboard",
+                        )
+                    ],
+                    className="one-third column",
+                    id="button",
+                ),
+            ],
+            id="header",
+            className="row flex-display",
+            style={"margin-bottom": "25px"},
+        )
 
 
 def build_tabs():
@@ -48,11 +75,11 @@ def build_tabs():
         children=[
             dcc.Tabs(
                 id="tabs-corona",
-                value="time_series",
+                value="tab_time_series",
                 className="custom-tabs",
                 children=[
                     dcc.Tab(
-                        id="Specs-tab",
+                        id="tab-time-series",
                         label="Time Series",
                         value="tab_time_series",
                         className="custom-tab",
@@ -62,7 +89,7 @@ def build_tabs():
                         ])
                     ),
                     dcc.Tab(
-                        id="Control-chart-tab",
+                        id="tab-scatter-plot",
                         label="Scatter Plots",
                         value="tab_scatter_plots",
                         className="custom-tab",
@@ -71,17 +98,29 @@ def build_tabs():
                             plot_scatter(app, df)
                         ])
                     ),
+                    dcc.Tab(
+                        id="tab-forecast-plot",
+                        label="Forecast",
+                        value="tab_forecast",
+                        className="custom-tab",
+                        selected_className="custom-tab--selected",
+                        children=html.Div([
+                            # plot_scatter(app, df)
+                        ])
+                    ),
                 ],
             )
         ],
     )
 
 
-app.layout = html.Div([
+app.layout = html.Div(children=[
+    html.Div(id="output-clientside"),
     build_banner(),
-    build_tabs(),
-    html.Div(id='main')
-])
+    build_tabs()
+],
+    id="mainContainer",
+    style={"display": "flex", "flex-direction": "column"})
 
 
 if __name__ == "__main__":

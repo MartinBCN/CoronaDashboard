@@ -6,7 +6,6 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 
-from assets.style import GRID_LINES, generate_section_banner
 from tabs.data import get_data
 
 # total_cases  new_cases  total_cases_per_million  new_cases_per_million
@@ -28,11 +27,13 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
     plot = html.Div(
             [
-                generate_section_banner('Cases and deaths per country in time'),
                 html.Div(
                     dcc.Dropdown(id='country_dropdown', options=all_countries, value=['Germany'],
                                  multi=True),
-                    style={'width': '48%', 'display': 'inline-block'}
+                    style={'width': '45%', 'display': 'inline-block'}
+                ),
+                html.Div(
+                    style={'width': '9%', 'display': 'inline-block'}
                 ),
                 html.Div(
 
@@ -50,23 +51,25 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                             style={'width': '32%', 'display': 'inline-block'}
                         ),
                     ],
-                    style={'width': '48%', 'display': 'inline-block'}
+                    style={'width': '45%', 'display': 'inline-block'}
                 ),
 
                 html.Div(
                     dcc.Graph(id='cases',
                               config={'displayModeBar': False}),
-                    style={'width': '48%', 'display': 'inline-block'}
+                              style={'width': '45%', 'display': 'inline-block'},
+                              className="pretty_container"
                 ),
 
                 html.Div(
-                    style={'width': '2%', 'display': 'inline-block'}
+                    style={'width': '5%', 'display': 'inline-block'}
                 ),
 
                 html.Div(
                     dcc.Graph(id='deaths',
                               config={'displayModeBar': False}),
-                    style={'width': '48%', 'display': 'inline-block'}
+                              style={'width': '45%', 'display': 'inline-block'},
+                              className="pretty_container"
                 )
 
             ]
@@ -102,8 +105,8 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
 
         return {'data': traces,
                 'layout': go.Layout(
-                                    xaxis={**GRID_LINES},
-                                    yaxis={'title': field.capitalize(), **GRID_LINES},
+                                    xaxis={},
+                                    yaxis={'title': field.capitalize()},
                                     margin=dict(t=40),
                                     hovermode="closest",
                                     paper_bgcolor="rgba(0,0,0,0)",

@@ -4,7 +4,6 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 
-from assets.style import GRID_LINES, generate_section_banner
 from tabs.data import get_data
 
 
@@ -40,8 +39,8 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                                     legend={"font": {"color": "darkgray"}, "orientation": "h", "x": 0, "y": 1.1},
                                     font={"color": "darkgray"},
                                     showlegend=True,
-                                    xaxis={'title': x_name, **GRID_LINES},
-                                    yaxis={'title': y_name, **GRID_LINES}
+                                    xaxis={'title': x_name, },
+                                    yaxis={'title': y_name, }
                                     )}
 
     def plot_population_total_deaths() -> dict:
@@ -59,31 +58,30 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
         className="twelve columns", children=
             [
                 html.Div(children=[
-                    generate_section_banner('Test'),
                     html.Div(
                         dcc.Graph(id='scatter_continent', figure=plot_population_total_deaths(),
                                   config={'displayModeBar': False})
                     )],
-                        style={'width': '48%', 'display': 'inline-block'}),
+                              style={'width': '45%', 'display': 'inline-block'},
+                              className="pretty_container"),
 
                 html.Div(children=[
-                    generate_section_banner('Test'),
                     html.Div(
                         dcc.Graph(id='scatter_cases_deaths', figure=plot_gdp_vs_deaths(),
                                   config={'displayModeBar': False})
                     )],
-                    style={'width': '48%', 'display': 'inline-block'}),
+                              style={'width': '45%', 'display': 'inline-block'},
+                              className="pretty_container"),
 
                 html.Div(children=[
-                    generate_section_banner('Test'),
                     html.Div(
                         dcc.Graph(id='scatter_gdp_deaths', figure=plot_cases_vs_deaths(),
                                   config={'displayModeBar': False})
                     )],
-                    style={'width': '48%', 'display': 'inline-block'}),
+                              style={'width': '45%', 'display': 'inline-block'},
+                              className="pretty_container"),
 
                 html.Div(children=[
-                    generate_section_banner('Test'),
                     html.Div(
                         dcc.Graph(id='scatter_hospital_beds_deaths',
                                   figure=generic_scatter('hospital_beds_per_thousand', 'total_deaths_per_million',
@@ -91,7 +89,8 @@ def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
                                   config={'displayModeBar': False},
                                   )
                     )],
-                    style={'width': '48%', 'display': 'inline-block'})
+                              style={'width': '45%', 'display': 'inline-block'},
+                              className="pretty_container")
 
             ]
         )
