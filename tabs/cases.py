@@ -83,7 +83,7 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
         traces = [
             go.Scatter(
                 x=df[df['location'] == country]['date'],
-                y=df[df['location'] == country][column],
+                y=df[df['location'] == country][column].clip(0),
                 mode='lines',
                 opacity=opacity,
                 name=country,
@@ -94,7 +94,7 @@ def plot_cases(app: dash.Dash, df: pd.DataFrame) -> html.Div:
             traces += [
                 go.Scatter(
                     x=df[df['location'] == country]['date'],
-                    y=df[df['location'] == country][column].rolling(7).mean(),
+                    y=df[df['location'] == country][column].clip(0).rolling(7).mean(),
                     mode='lines',
                     opacity=0.7,
                     name=country,

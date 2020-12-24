@@ -4,23 +4,21 @@ pd.options.display.width = 0
 
 
 def get_data() -> pd.DataFrame:
-    # p = Path(__file__).parents[2]
-    df = pd.read_csv('data/owid-covid-data.csv')
+    fn = Path('data/owid-covid-data.csv')
+    # p = Path(__file__).parents[1]
+    # fn = p / fn
+    df = pd.read_csv(fn)
+
+    fn = Path('data/head_of_government.csv')
+    # p = Path(__file__).parents[1]
+    # fn = p / fn
+    heads = pd.read_csv(fn)
+
+    df = df.merge(heads, on=['location'], how='left')
     return df
 
 
 if __name__ == '__main__':
     df = get_data()
+
     print(df.head())
-    df['continent'].unique()
-
-    for continent in df['continent'].unique():
-        print(f'--- {continent} ---')
-        df_pop_death = df[df['continent'] == continent][['date', 'location', 'total_cases', 'population']].copy()
-
-        idx = df.groupby(['location'])['date'].transform(max) == df['date']
-
-        df_pop_death = df_pop_death[idx]
-        print(df_pop_death)
-
-    print(df.rolling(7))
