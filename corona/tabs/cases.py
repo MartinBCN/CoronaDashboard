@@ -6,7 +6,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 
-from tabs.data import get_data
+from utils.data import get_data
 
 # total_cases  new_cases  total_cases_per_million  new_cases_per_million
 FIELDS = {

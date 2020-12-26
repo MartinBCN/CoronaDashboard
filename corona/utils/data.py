@@ -1,20 +1,19 @@
+import os
 from pathlib import Path
 import pandas as pd
 pd.options.display.width = 0
 
 
 def get_data() -> pd.DataFrame:
-    fn = Path('data/owid-covid-data.csv')
-    # p = Path(__file__).parents[1]
-    # fn = p / fn
+    data = Path(os.environ['DATA_DIR'])
+    fn = data / Path('owid-covid-data.csv')
     df = pd.read_csv(fn)
 
-    fn = Path('data/head_of_government.csv')
-    # p = Path(__file__).parents[1]
-    # fn = p / fn
+    fn = data / Path('head_of_government.csv')
     heads = pd.read_csv(fn)
 
     df = df.merge(heads, on=['location'], how='left')
+
     return df
 
 

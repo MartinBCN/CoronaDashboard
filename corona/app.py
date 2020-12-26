@@ -3,10 +3,9 @@ import dash_html_components as html
 import dash_core_components as dcc
 import flask
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output, State, ClientsideFunction
 
 from tabs.cases import plot_cases
-from tabs.data import get_data
+from utils.data import get_data
 from tabs.map import generate_map
 from tabs.scatter_plots import plot_scatter
 

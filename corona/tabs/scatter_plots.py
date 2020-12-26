@@ -4,7 +4,7 @@ import dash
 import dash_html_components as html
 import dash_core_components as dcc
 
-from tabs.data import get_data
+from utils.data import get_data
 
 
 def plot_scatter(app: dash.Dash, df: pd.DataFrame) -> html.Div:
