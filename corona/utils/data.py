@@ -1,13 +1,34 @@
 import os
 from pathlib import Path
 import pandas as pd
+import io
+import requests
+import logging
+logger = logging.getLogger('corona.utils.data')
 pd.options.display.width = 0
 
 
 def get_data() -> pd.DataFrame:
+    """
+    Curl the data from the website https://covid.ourworldindata.org/data/owid-covid-data.csv
+    If for whatever reason this does not succeed we log an error and load a static file
+    Returns
+    -------
+
+    """
+
     data = Path(os.environ['DATA_DIR'])
-    fn = data / Path('owid-covid-data.csv')
-    df = pd.read_csv(fn)
+
+    try:
+        url = "https://covid.ourworldindata.org/data/owid-covid-data.csv"
+        s = requests.get(url).content
+        df = pd.read_csv(io.StringIO(s.decode('utf-8')))
+    except Exception as e:
+        logger.error('Could not load latest data')
+        logger.error(f'Exception: {e}')
+
+        fn = data / Path('owid-covid-data.csv')
+        df = pd.read_csv(fn)
 
     fn = data / Path('head_of_government.csv')
     heads = pd.read_csv(fn)
@@ -18,6 +39,14 @@ def get_data() -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    df = get_data()
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.ERROR)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
 
-    print(df.head())
+    os.environ['DATA_DIR'] = f"{Path(__file__).parents[2] / 'data'}"
+
+    ddf = get_data()
+
+    print(ddf.head())
