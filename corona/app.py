@@ -1,5 +1,4 @@
 import os
-
 from main_view import main_layout
 from maindash import app
 
