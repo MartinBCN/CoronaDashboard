@@ -18,19 +18,53 @@ FIELDS = {
 }
 
 
-def plot_single_column(countries: list, field: str, normalise: bool, cumulative: bool, rolling: bool) -> dict:
-    cumulative = cumulative * 'cumulative' + (not cumulative) * 'new'
-    normalise = normalise * 'normalised' + (not normalise) * 'absolute'
+def plot_single_column(countries: list, field: str,
+                       normalise_clicks: int, cumulative_clicks: int, rolling_clicks: int) -> dict:
+    """
+    Create a graph for case and death numbers
+
+    Parameters
+    ----------
+    countries
+    field
+    normalise_clicks
+    cumulative_clicks
+    rolling_clicks
+
+    Returns
+    -------
+
+    """
+
+    # Create a local copy to avoid irreversible changes to the data
+    df_cases = df.copy()
+
+    if (cumulative_clicks % 2) == 0:
+        prefix = 'total'
+    else:
+        prefix = 'new'
+
+    if (normalise_clicks % 2) == 0:
+        suffix = '_per_million'
+        hover_template = f'{prefix.capitalize()} {field.capitalize()}: '"%{y:.1f} | %{x}"
+    else:
+        suffix = ''
+        hover_template = f'{prefix.capitalize()} {field.capitalize()}: '"%{y} | %{x}"
+
+    column = f'{prefix}_{field}{suffix}'
+
+    rolling = (rolling_clicks % 2) == 0
+
     opacity = rolling * 0.2 + (not rolling) * 0.7
-    column = FIELDS[field][normalise][cumulative]
     traces = [
         go.Scatter(
-            x=df[df['location'] == country]['date'],
-            y=df[df['location'] == country][column].clip(0),
-            mode='lines',
+            x=df_cases[df_cases['location'] == country]['date'],
+            y=df_cases[df_cases['location'] == country][column].clip(0),
+            hovertemplate=hover_template,
             opacity=opacity,
             name=country,
             line={'color': px.colors.qualitative.Plotly[i]},
+            showlegend=(not rolling)
         ) for (i, country) in enumerate(countries)
     ]
     if rolling:
@@ -41,8 +75,7 @@ def plot_single_column(countries: list, field: str, normalise: bool, cumulative:
                 mode='lines',
                 opacity=0.7,
                 name=country,
-                line={'color': px.colors.qualitative.Plotly[i]},
-                showlegend=False
+                line={'color': px.colors.qualitative.Plotly[i]}
             ) for (i, country) in enumerate(countries)
         ]
 
@@ -68,10 +101,8 @@ def plot_single_column(countries: list, field: str, normalise: bool, cumulative:
      Input('toggle-rolling', 'n_clicks')]
 )
 def update_cases(countries: list, normalise_clicks: int, cumulative_clicks: int, rolling_clicks: int) -> dict:
-    return plot_single_column(countries=countries, field='cases',
-                              normalise=normalise_clicks % 2 == 0,
-                              cumulative=cumulative_clicks % 2 == 0,
-                              rolling=rolling_clicks % 2 == 0)
+    return plot_single_column(countries=countries, field='cases', normalise_clicks=normalise_clicks,
+                              cumulative_clicks=cumulative_clicks, rolling_clicks=rolling_clicks)
 
 
 @app.callback(
@@ -82,10 +113,8 @@ def update_cases(countries: list, normalise_clicks: int, cumulative_clicks: int,
      Input('toggle-rolling', 'n_clicks')]
 )
 def update_deaths(countries: list, normalise_clicks: int, cumulative_clicks: int, rolling_clicks: int) -> dict:
-    return plot_single_column(countries=countries, field='deaths',
-                              normalise=normalise_clicks % 2 == 0,
-                              cumulative=cumulative_clicks % 2 == 0,
-                              rolling=rolling_clicks % 2 == 0)
+    return plot_single_column(countries=countries, field='deaths', normalise_clicks=normalise_clicks,
+                              cumulative_clicks=cumulative_clicks, rolling_clicks=rolling_clicks)
 
 
 def generate_cases() -> html.Div:
@@ -94,28 +123,26 @@ def generate_cases() -> html.Div:
 
     plot = html.Div(
             [
+                html.Div(children=' ', style={'width': '90%',   'min-height': '1.25em', 'line-height': '1.25'}),
                 html.Div(
-                    dcc.Dropdown(id='country_dropdown', options=all_countries, value=['Germany'],
-                                 multi=True),
-                    style={'width': '45%', 'display': 'inline-block'}
+                    dcc.Dropdown(id='country_dropdown', options=all_countries, value=['Germany'], multi=True),
+                    style={'width': '45%', 'display': 'inline-block', 'vertical-align': 'middle'}
                 ),
-                html.Div(
-                    style={'width': '9%', 'display': 'inline-block'}
-                ),
+                html.Div(style={'width': '9%', 'display': 'inline-block'}),
                 html.Div(
 
                     [
                         html.Div(
                             html.Button('Toggle Cumulative', id='toggle-cumulative', n_clicks=1),
-                            style={'width': '32%', 'display': 'inline-block'}
+                            style={'width': '32%', 'display': 'inline-block', 'vertical-align': 'middle'}
                         ),
                         html.Div(
                             html.Button('Toggle Normalisation', id='toggle-normalise', n_clicks=1),
-                            style={'width': '32%', 'display': 'inline-block'}
+                            style={'width': '32%', 'display': 'inline-block', 'vertical-align': 'middle'}
                         ),
                         html.Div(
                             html.Button('Toggle Rolling', id='toggle-rolling', n_clicks=1),
-                            style={'width': '32%', 'display': 'inline-block'}
+                            style={'width': '32%', 'display': 'inline-block', 'vertical-align': 'middle'}
                         ),
                     ],
                     style={'width': '45%', 'display': 'inline-block'}
