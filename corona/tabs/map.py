@@ -37,13 +37,13 @@ def plot_bar_chart(df_continent: pd.DataFrame):
         y=df_continent['location'],
         orientation='h'))
 
-    fig.update_layout(height=800)
+    # fig.update_layout(height=800)
     bar_chart = dcc.Graph(id='bar_chart', figure=fig, config={'displayModeBar': False})
 
     return bar_chart
 
 
-def generate_map_tab() -> html.Div:
+def generate_map() -> html.Div:
     continent = 'Europe'
     df_continent = df[df['continent'] == continent].copy()
 

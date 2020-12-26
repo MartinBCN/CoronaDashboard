@@ -88,7 +88,7 @@ def update_deaths(countries: list, normalise_clicks: int, cumulative_clicks: int
                               rolling=rolling_clicks % 2 == 0)
 
 
-def plot_cases() -> html.Div:
+def generate_cases() -> html.Div:
 
     all_countries = [{'value': country, 'label': f'{country}'} for country in df['location'].unique()]
 

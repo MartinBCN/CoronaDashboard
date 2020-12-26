@@ -4,10 +4,10 @@ import dash_core_components as dcc
 
 from maindash import app
 from utils.data import get_data
-from tabs.map import generate_map_tab
+from tabs.map import generate_map
 
-from tabs.cases import plot_cases
-from tabs.scatter_plots import plot_scatter
+from tabs.cases import generate_cases
+from tabs.scatter_plots import generate_scatter
 
 
 df = get_data()
@@ -71,7 +71,7 @@ def build_tabs():
                         value="tab_time_series",
                         className="custom-tab",
                         selected_className="custom-tab--selected",
-                        children=plot_cases()
+                        children=generate_cases()
     )
 
     tab_scatter_plots = dcc.Tab(
@@ -80,7 +80,7 @@ def build_tabs():
                         value="tab_scatter_plots",
                         className="custom-tab",
                         selected_className="custom-tab--selected",
-                        children=plot_scatter()
+                        children=generate_scatter()
                     )
 
     tab_map = dcc.Tab(
@@ -89,7 +89,7 @@ def build_tabs():
                 value="tab_map",
                 className="custom-tab",
                 selected_className="custom-tab--selected",
-                children=generate_map_tab()
+                children=generate_map()
     )
 
     tabs = html.Div(

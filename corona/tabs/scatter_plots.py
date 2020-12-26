@@ -92,7 +92,7 @@ def plot_gender_head() -> dict:
             )}
 
 
-def plot_scatter() -> html.Div:
+def generate_scatter() -> html.Div:
 
     plot = html.Div(
         className="twelve columns", children=
