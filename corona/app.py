@@ -7,7 +7,7 @@ from maindash import app
 if __name__ == '__main__':
     app.layout = main_layout()
 
-    # Heroku randomly assigns ports to the $PORT environment variable. 
+    # Heroku randomly assigns ports to the $PORT environment variable.
     # For local testing we use dash's default port 8050
     port = int(os.environ.get("PORT", 8050))
 
