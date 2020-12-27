@@ -3,14 +3,10 @@ import dash_html_components as html
 import dash_core_components as dcc
 
 from maindash import app
-from utils.data import get_data
 from tabs.map import generate_map
 
 from tabs.cases import generate_cases
 from tabs.scatter_plots import generate_scatter
-
-
-df = get_data()
 
 
 def build_banner():

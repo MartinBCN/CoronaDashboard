@@ -5,18 +5,6 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 from maindash import df, app
 
-# total_cases  new_cases  total_cases_per_million  new_cases_per_million
-FIELDS = {
-    'cases': {
-        'normalised': {'cumulative': 'total_cases_per_million', 'new': 'new_cases_per_million'},
-        'absolute': {'cumulative': 'total_cases', 'new': 'new_cases'}
-    },
-    'deaths': {
-        'normalised': {'cumulative': 'total_deaths_per_million', 'new': 'new_deaths_per_million'},
-        'absolute': {'cumulative': 'total_deaths', 'new': 'new_deaths'}
-    }
-}
-
 
 def plot_single_column(countries: list, field: str,
                        normalise_clicks: int, cumulative_clicks: int, rolling_clicks: int) -> dict:
@@ -38,6 +26,13 @@ def plot_single_column(countries: list, field: str,
 
     # Create a local copy to avoid irreversible changes to the data
     df_cases = df.copy()
+
+    # Determine which field to show. For the two global options (cases, deaths) these are
+    # new_cases
+    # total_cases
+    # new_cases_per_million
+    # total_cases_million
+    # which are chosen by the 'Toggle Cumulative' and 'Toggle Normalisation' buttons.
 
     if (cumulative_clicks % 2) == 0:
         prefix = 'total'
@@ -83,10 +78,8 @@ def plot_single_column(countries: list, field: str,
             'layout': go.Layout(
                                 xaxis={},
                                 yaxis={'title': field.capitalize()},
-                                margin=dict(t=40),
+                                # margin=dict(t=40),
                                 hovermode="closest",
-                                paper_bgcolor="rgba(0,0,0,0)",
-                                plot_bgcolor="rgba(0,0,0,0)",
                                 legend={"font": {"color": "darkgray"}, "orientation": "h", "x": 0, "y": 1.1},
                                 font={"color": "darkgray"},
                                 showlegend=True
